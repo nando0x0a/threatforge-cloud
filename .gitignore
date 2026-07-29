@@ -1,0 +1,25 @@
+# Terraform state — contains resource IDs, IPs, and sometimes sensitive attributes
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+crash.log
+crash.*.log
+
+# Real variable values — ICANN registrant contact info, anything environment-specific
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+
+# Local overrides
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Secrets / environment files
+.env
+.env.*
+
+# OS/editor cruft
+.DS_Store
