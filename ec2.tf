@@ -33,6 +33,14 @@ resource "aws_security_group" "threatforge" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description = "HTTP - Lets Encrypt HTTP-01 challenge only, nginx redirects everything else to HTTPS"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     description = "All outbound"
     from_port   = 0
