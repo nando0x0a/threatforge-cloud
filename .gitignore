@@ -28,3 +28,4 @@ override.tf.json
 
 # OS/editor cruft
 .DS_Store
+__pycache__/

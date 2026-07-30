@@ -1,0 +1,18 @@
+services:
+  login-notifier:
+    image: login-notifier
+    container_name: login-notifier
+    restart: unless-stopped
+
+    # Read-only -- this service only ever tails the log, never writes to it.
+    volumes:
+      - /var/log/nginx/access.log:/var/log/nginx/access.log:ro
+
+    env_file:
+      - /opt/docker/login-notifier/.env
+
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
