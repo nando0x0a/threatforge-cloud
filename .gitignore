@@ -1,6 +1,10 @@
-# Terraform state — contains resource IDs, IPs, and sometimes sensitive attributes
+# Terraform state and plan files — contain resource IDs, IPs, and the real
+# values of anything marked sensitive (the "(sensitive value)" masking in
+# `terraform plan`'s human-readable output does NOT redact the saved file)
 *.tfstate
 *.tfstate.*
+*.tfplan
+tfplan
 .terraform/
 crash.log
 crash.*.log
