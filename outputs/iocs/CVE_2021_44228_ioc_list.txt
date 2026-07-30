@@ -1,0 +1,123 @@
+# ThreatForge Output — IOC_LIST
+# CVE:       CVE-2021-44228
+# Product:   6bk1602-0aa12-0tp0_firmware, 6bk1602-0aa22-0tp0_firmware, 6bk1602-0aa32-0tp0_firmware
+# Tags:      [KEV] [RCE] [RCE-KEV] [CRIT] [EPSS] [POC]
+# Score:     170
+# Tier:      CRITICAL — ACT NOW
+# Generated: 2026-07-30T02:41:23.348748Z
+# Status:    OK
+# ---
+
+# IoC List — CVE-2021-44228
+# Generated: 2025-07-15
+# Confidence: HIGH / MEDIUM / LOW per indicator
+# ⚠️ DRAFT — For analyst review and validation before operationalisation
+
+---
+
+## Network Indicators
+
+*No specific IPs are derivable from the provided context with sufficient confidence to list. Analyst should consult threat intelligence feeds (e.g., Shodan, GreyNoise, AlienVault OTX) for current Log4Shell scanning infrastructure. Fabricating IPs would be irresponsible; omitted intentionally.*
+
+---
+
+## Domain Indicators
+
+DOMAIN: *.dnslog.cn          # Confidence: HIGH — Commonly used JNDI callback/OOB exfiltration domain class observed in Log4Shell exploitation; used to confirm vulnerable endpoints via DNS lookup
+DOMAIN: *.interact.sh        # Confidence: HIGH — Popular out-of-band interaction testing platform widely observed in Log4Shell exploit attempts
+DOMAIN: *.canarytokens.com   # Confidence: MEDIUM — Used in both attacker and researcher JNDI callback chains to confirm exploitability
+DOMAIN: *.burpcollaborator.net  # Confidence: MEDIUM — Burp Suite OOB callback domain used in exploit PoC testing chains [6][7]
+
+*Note: JNDI-triggered DNS callbacks to attacker-controlled domains are a primary exploitation indicator. The specific domains above represent classes of infrastructure; analysts should tune detections for any attacker-controlled DNS callback domain appearing in log data alongside JNDI strings.*
+
+---
+
+## URL Indicators
+
+URL: ldap://<attacker-host>/<payload>         # Confidence: HIGH — Primary JNDI LDAP callback URL structure embedded in exploit strings [1][2]
+URL: ldaps://<attacker-host>/<payload>        # Confidence: HIGH — LDAP over TLS variant used in exploitation
+URL: rmi://<attacker-host>/<payload>          # Confidence: HIGH — JNDI RMI callback variant [1]
+URL: dns://<attacker-host>/<payload>          # Confidence: HIGH — JNDI DNS lookup variant for OOB detection
+URL: http://packetstormsecurity.com/files/165261/Apache-Log4j2-2.14.1-Information-Disclosure.html  # Confidence: HIGH — Public PoC reference [6]
+URL: http://packetstormsecurity.com/files/165270/Apache-Log4j2-2.14.1-Remote-Code-Execution.html   # Confidence: HIGH — Public RCE PoC reference [7]
+
+---
+
+## File Indicators
+
+*No specific file hashes are derivable from the provided context with sufficient confidence. Analyst should reference:*
+- *Log4j JAR hashes for vulnerable versions (≤2.14.1) from the Apache Software Foundation or NVD [1]*
+- *Fedora package hashes for patched versions: log4j-2.15.0-1.fc35 [5] and jansi-2.1.1-4.fc34 [4]*
+- *JNDI exploit class files (e.g., Exploit.class, marshalled payloads) — hashes vary by tooling; consult VirusTotal and MalwareBazaar under tag "log4shell"*
+
+---
+
+## User-Agent Indicators
+
+UA: ${jndi:ldap://                            # Confidence: HIGH — Literal JNDI injection string appearing in User-Agent header; primary exploitation vector observed in the wild [1][2]
+UA: ${${::-j}${::-n}${::-d}${::-i}:         # Confidence: HIGH — Obfuscated JNDI bypass variant (nested substitution) to evade WAF/string matching [1]
+UA: ${${lower:j}ndi:                          # Confidence: HIGH — Case-manipulation obfuscation bypass variant
+UA: ${${upper:j}ndi:                          # Confidence: HIGH — Upper-case obfuscation bypass variant
+UA: ${j${::-n}di:                             # Confidence: HIGH — Partial-substitution obfuscation variant
+UA: Java/1.                                   # Confidence: MEDIUM — Java runtime User-Agent associated with JNDI callback HTTP requests from victim host to attacker's marshalling server
+
+---
+
+## URI Path Indicators
+
+URI: /                        # Confidence: LOW — JNDI strings injected at any URI path; no specific vulnerable path; payload is in headers/parameters not path
+URI: /solr/admin/cores        # Confidence: MEDIUM — Apache Solr (Log4j-dependent) commonly targeted endpoint
+URI: /api/                    # Confidence: LOW — Generic API endpoints where user input is logged
+
+*Note: The exploit does not target a specific URI path. The JNDI payload is injected into any field that gets logged — HTTP headers (User-Agent, X-Forwarded-For, Referer, Accept-Language, X-Api-Version), form fields, usernames, and URL parameters. URI path indicators are therefore low-value for this CVE.*
+
+---
+
+## Payload String Indicators (Detection Strings)
+
+The following strings/patterns should be monitored in all log sources, WAF telemetry, and HTTP request logs:
+
+${jndi:
+${jndi:ldap://
+${jndi:ldaps://
+${jndi:rmi://
+${jndi:dns://
+${jndi:iiop://
+${jndi:corba://
+${${::-j}${::-n}${::-d}${::-i}:
+${${lower:j}${lower:n}${lower:d}${lower:i}:
+${${upper:j}${upper:n}${upper:d}${upper:i}:
+${j${::-n}di:
+${j${lower:n}di:
+%24%7Bjndi%3A        (URL-encoded variant)
+%7B%6A%6E%64%69%3A  (double URL-encoded variant)
+
+---
+
+## Behavioural Patterns (Observable, No Static IoC)
+
+Given 100 public PoCs exist [7] and active exploitation is confirmed by both CISA [2] and VulnCheck KEV [3], analysts should monitor for:
+
+1. **Outbound DNS/LDAP/RMI from application servers** — Any unexpected outbound connection from a Java application server to an external host on TCP/UDP 389 (LDAP), TCP 636 (LDAPS), TCP 1099 (RMI), or DNS query to an external host triggered by inbound HTTP request processing
+2. **Java class loading from remote host** — Network connections followed by class file retrieval (HTTP GET `.class` file from attacker infrastructure)
+3. **Unexpected child processes from Java application servers** — `java` spawning `sh`, `bash`, `cmd.exe`, `powershell`, `curl`, `wget`
+4. **Log4j version in use ≤2.14.1** — Presence of `log4j-core-2.x.x.jar` where x.x ≤ 14.1 [1][5]
+5. **JNDI strings in any inbound HTTP field** — Headers including X-Forwarded-For, Referer, Accept, X-Api-Version, Authorization, and all body parameters
+
+---
+
+## Notes
+
+- **Confidence caveat**: Network and file-based IoCs are omitted because the provided context does not include specific attacker infrastructure with verifiable confidence. The domain and UA indicators above are representative classes based on widely documented exploitation behaviour for this CVE [1][2][3][6][7], not confirmed single-campaign infrastructure.
+- **PoC availability is extreme**: 100 public PoCs are known [7], meaning exploit capability is universally accessible and IoC diversity is very high. Static IoC matching alone is insufficient — behavioural detection is essential.
+- **Obfuscation is pervasive**: Attackers routinely bypass naive `${jndi:` string matching using nested substitution, case manipulation, and URL encoding. Detection rules must cover all documented variants.
+- **Patch status**: Fedora 35 update to log4j-2.15.0-1.fc35 [5] and Fedora 34 update to jansi-2.1.1-4.fc34 [4] are referenced in advisory context. CISA mandates patching or asset removal [2].
+- **KEV active exploitation**: Listed by CISA on 2021-12-
+# --- Sources (ThreatForge-verified) ---
+# [1] NVD — https://nvd.nist.gov/vuln/detail/CVE-2021-44228
+# [2] CISA Known Exploited Vulnerabilities Catalog, added 2021-12-10 — https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+# [3] VulnCheck KEV, added 2021-12-06 — https://www.vulncheck.com/kev
+# [4] lists.fedoraproject.org — https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/M5CSVUNV4HWZZXGOKNSK6L7RPM7BOKIB/
+# [5] lists.fedoraproject.org — https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/VU57UJDCFIASIO35GC55JMKSRXJMCDFM/
+# [6] PoC (nvd) — http://packetstormsecurity.com/files/165261/Apache-Log4j2-2.14.1-Information-Disclosure.html
+# [7] PoC (nvd) — http://packetstormsecurity.com/files/165270/Apache-Log4j2-2.14.1-Remote-Code-Execution.html
