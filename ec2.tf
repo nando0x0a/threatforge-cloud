@@ -15,7 +15,7 @@ data "aws_ami" "ubuntu" {
 
 resource "aws_security_group" "threatforge" {
   name        = "threatforge-cloud"
-  description = "ThreatForge cloud instance — SSH from admin IP only, HTTPS from anywhere, no other inbound"
+  description = "ThreatForge cloud instance - SSH from admin IP only, HTTPS from anywhere, no other inbound"
 
   ingress {
     description = "SSH from admin IP"
