@@ -49,6 +49,7 @@ def _notify(host: str, ip: str, user: str, path: str) -> None:
             timeout=10,
         )
         resp.raise_for_status()
+        print(f"[login-notifier] posted: {host} {ip} {user} {path}", flush=True)
     except Exception as e:
         print(f"[login-notifier] Discord post failed: {e}", flush=True)
 
@@ -77,7 +78,11 @@ def main() -> None:
     # `tail -F` (not -f): follows by filename, so it survives logrotate
     # replacing the file out from under it, not just the original inode.
     proc = subprocess.Popen(
-        ["tail", "-F", "-n", "0", LOG_PATH],
+        # stdbuf -oL forces tail's stdout to line-buffer -- without it, tail
+        # fully-buffers its output when piped (not a TTY), so on a
+        # low-traffic log new lines can sit in the pipe indefinitely instead
+        # of reaching Python right away.
+        ["stdbuf", "-oL", "tail", "-F", "-n", "0", LOG_PATH],
         stdout=subprocess.PIPE,
         text=True,
         bufsize=1,
