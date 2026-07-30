@@ -1,0 +1,26 @@
+# Copy this file to terraform.tfvars and fill in real values.
+# terraform.tfvars is gitignored — never commit it, it holds your real
+# address/phone/email for the domain registration.
+
+aws_region    = "us-east-1"
+domain_name   = "nando0x0a.com"
+subdomain     = "threatforge"
+admin_ip_cidr = "YOUR_IP_HERE/32" # find yours at https://checkip.amazonaws.com
+instance_type = "t3.micro"
+
+key_pair_public_key = "ssh-ed25519 AAAA... your-key-comment"
+
+monthly_budget_usd = 20
+budget_alert_email = "you@example.com"
+
+domain_contact = {
+  first_name     = "First"
+  last_name      = "Last"
+  address_line_1 = "123 Main St"
+  city           = "City"
+  state          = "ST"
+  country_code   = "US"
+  zip_code       = "00000"
+  phone_number   = "+1.5555555555"
+  email          = "you@example.com"
+}
