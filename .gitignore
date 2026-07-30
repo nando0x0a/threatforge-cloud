@@ -2,9 +2,10 @@
 *.tfstate
 *.tfstate.*
 .terraform/
-.terraform.lock.hcl
 crash.log
 crash.*.log
+# NOTE: .terraform.lock.hcl is intentionally NOT ignored — it pins provider
+# versions for reproducible builds and should be committed.
 
 # Real variable values — ICANN registrant contact info, anything environment-specific
 *.tfvars
