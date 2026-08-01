@@ -1,7 +1,7 @@
 data "aws_partition" "current" {}
 
 resource "aws_budgets_budget" "monthly" {
-  name              = "threatforge-cloud-monthly"
+  name              = "vuln-skill-cloud-monthly"
   budget_type       = "COST"
   limit_amount      = tostring(var.monthly_budget_usd)
   limit_unit        = "USD"
@@ -43,7 +43,7 @@ resource "aws_budgets_budget" "monthly" {
 
 # Role the AWS Budgets service assumes to actually execute the stop action.
 resource "aws_iam_role" "budget_action" {
-  name = "threatforge-cloud-budget-action"
+  name = "vuln-skill-cloud-budget-action"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

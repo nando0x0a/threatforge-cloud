@@ -18,9 +18,9 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Project   = "ThreatForge"
+      Project   = "Vuln-Skill"
       ManagedBy = "Terraform"
-      Repo      = "nando0x0a/threatforge-cloud"
+      Repo      = "nando0x0a/vuln-skill-cloud"
     }
   }
 }

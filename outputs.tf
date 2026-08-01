@@ -1,11 +1,16 @@
 output "instance_public_ip" {
-  description = "Elastic IP of the ThreatForge EC2 instance"
+  description = "Elastic IP of the shared EC2 instance (hosts Vuln-Skill and soc-skill-cloud both)"
   value       = aws_eip.threatforge.public_ip
 }
 
 output "threatforge_url" {
-  description = "URL the ThreatForge web app will be reachable at, once built"
+  description = "URL of the pending-retirement threatforge subdomain -- see vuln_skill_url for the renamed app's URL"
   value       = "https://${var.subdomain}.${var.domain_name}"
+}
+
+output "vuln_skill_url" {
+  description = "URL the Vuln-Skill web app will be reachable at"
+  value       = "https://vulnskill.${var.domain_name}"
 }
 
 output "route53_name_servers" {

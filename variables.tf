@@ -10,7 +10,13 @@ variable "domain_name" {
 }
 
 variable "subdomain" {
-  description = "Subdomain the ThreatForge web app will live on (e.g. threatforge -> threatforge.nando0x0a.com)"
+  # Kept as "threatforge" -- still backs the live aws_route53_record.threatforge
+  # resource (see dns.tf) until the Vuln-Skill rename's DNS cutover completes:
+  # aws_route53_record.vuln_skill is added alongside it first, verified
+  # working, and only then is this variable/resource retired. Changing the
+  # default here now would force-replace the record this variable already
+  # feeds, with no new record yet in place to take over first.
+  description = "Subdomain the (soon-to-be-retired) ThreatForge web app lives on, pending full cutover to aws_route53_record.vuln_skill (e.g. threatforge -> threatforge.nando0x0a.com)"
   type        = string
   default     = "threatforge"
 }
