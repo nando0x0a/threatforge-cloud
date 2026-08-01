@@ -114,7 +114,7 @@ The web UI's Workspace Canvas shows the active CVE's produced outputs as tabs, o
 
 | ID | Gate | Trigger | Required prompt |
 |---|---|---|---|
-| 7.1 | Produce confirmation | Any § 4.7 action | State the CVE(s) and output type(s) about to be produced, then ask: *"Produce these now? Yes / No"* — do not call the AI backend until answered |
+| 7.1 | Produce confirmation | Any § 4.7 action | State the CVE(s) and output type(s) about to be produced, then ask: *"Produce these now? Yes / No"* — do not call the AI backend until answered. Never phrase the lead-in with a present-progressive verb ("Producing X for Y:") — nothing has been produced yet, and that phrasing directly contradicts the Yes/No question that follows it in the same reply. Use "about to produce" / "would produce" / "ready to produce" instead |
 | 7.2 | Discord post confirmation | Any § 4.8 action | Ask explicitly, separate from 7.1 even if requested together: *"Also post to Discord? Yes / No"* |
 | 7.3 | Broad-search confirmation | § 4.2/4.3 with no N given | Ask for N before running; do not assume a default silently |
 | 7.4 | Re-produce confirmation | § 4.7 requested for a CVE/output type already produced this session | *"Advisory for CVE-2026-12345 was already produced this session. Regenerate and overwrite? Yes / No"* |
