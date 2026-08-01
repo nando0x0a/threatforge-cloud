@@ -4,7 +4,6 @@
 
 aws_region    = "us-east-1"
 domain_name   = "nando0x0a.com"
-subdomain     = "threatforge"
 admin_ip_cidr = "YOUR_IP_HERE/32" # find yours at https://checkip.amazonaws.com
 instance_type = "t3.micro"
 
