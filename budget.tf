@@ -42,8 +42,15 @@ resource "aws_budgets_budget" "monthly" {
 }
 
 # Role the AWS Budgets service assumes to actually execute the stop action.
+# Name deliberately kept as "threatforge-cloud-budget-action", not renamed
+# with everything else (2026-08-01 Vuln-Skill rename) -- the
+# threatforge-terraform IAM user lacks iam:ListInstanceProfilesForRole,
+# which the AWS provider needs to safely DELETE a role, so the rename got
+# stuck mid-replacement with the auto-stop budget action gone entirely.
+# Reverting the name avoids ever needing to delete this role again; it's
+# an internal AWS identifier with no user-visible impact either way.
 resource "aws_iam_role" "budget_action" {
-  name = "vuln-skill-cloud-budget-action"
+  name = "threatforge-cloud-budget-action"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
