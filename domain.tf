@@ -13,7 +13,9 @@ locals {
 }
 
 resource "aws_route53domains_registered_domain" "main" {
-  domain_name = var.domain_name
+  for_each = var.domain_names
+
+  domain_name = each.value
 
   auto_renew    = true
   transfer_lock = true
@@ -65,16 +67,16 @@ resource "aws_route53domains_registered_domain" "main" {
   }
 
   name_server {
-    name = aws_route53_zone.main.name_servers[0]
+    name = aws_route53_zone.main[each.value].name_servers[0]
   }
   name_server {
-    name = aws_route53_zone.main.name_servers[1]
+    name = aws_route53_zone.main[each.value].name_servers[1]
   }
   name_server {
-    name = aws_route53_zone.main.name_servers[2]
+    name = aws_route53_zone.main[each.value].name_servers[2]
   }
   name_server {
-    name = aws_route53_zone.main.name_servers[3]
+    name = aws_route53_zone.main[each.value].name_servers[3]
   }
 
   lifecycle {

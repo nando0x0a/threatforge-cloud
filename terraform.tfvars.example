@@ -3,7 +3,7 @@
 # address/phone/email for the domain registration.
 
 aws_region    = "us-east-1"
-domain_name   = "nando0x0a.com"
+domain_names  = ["nando0x0a.com"] # njnode.com is NOT here - its DNS lives at Cloudflare (see Projects/Homelab/cloudflare-tunnel-iac), not Route 53
 admin_ip_cidr = "YOUR_IP_HERE/32" # find yours at https://checkip.amazonaws.com
 instance_type = "t3.micro"
 

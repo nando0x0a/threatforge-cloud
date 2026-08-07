@@ -4,9 +4,9 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "domain_name" {
-  description = "Domain to register and host in Route 53 (e.g. nando0x0a.com)"
-  type        = string
+variable "domain_names" {
+  description = "Domains to register and host in Route 53 (e.g. [\"njnode.com\"]) — list more than one only during a migration overlap window, one hosted zone + registration per entry"
+  type        = set(string)
 }
 
 variable "admin_ip_cidr" {

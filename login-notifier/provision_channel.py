@@ -51,7 +51,7 @@ def _get_or_create_channel(token: str, guild_id: str, name: str) -> str:
     resp = requests.post(
         f"{API}/guilds/{guild_id}/channels",
         headers=_headers(token),
-        json={"name": name, "type": CHANNEL_TYPE_TEXT, "topic": "Automated alerts when someone successfully logs into ThreatForge or SOC-Skill"},
+        json={"name": name, "type": CHANNEL_TYPE_TEXT, "topic": "Automated alerts when someone successfully logs into a Cloud-project web app"},
         timeout=10,
     )
     resp.raise_for_status()

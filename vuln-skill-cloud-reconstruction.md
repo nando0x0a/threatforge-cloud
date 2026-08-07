@@ -926,8 +926,16 @@ services:
     restart: unless-stopped
 
     # Read-only -- this service only ever tails the log, never writes to it.
+    # Directory-level mount, not per-file -- a per-file bind mount pins to
+    # the inode that exists at container-creation time. nginx's logrotate
+    # config (create, not copytruncate) renames access.log away and creates
+    # a fresh file at the same path on every daily rotation; a file-level
+    # mount keeps pointing at the renamed-away inode forever after that,
+    # going silently stale (tail -F stays alive, just watching a file
+    # nginx stopped writing to). Mounting the directory resolves by path
+    # on every access, so it follows the rotation instead of missing it.
     volumes:
-      - /var/log/nginx/access.log:/var/log/nginx/access.log:ro
+      - /var/log/nginx:/var/log/nginx:ro
 
     env_file:
       - /opt/docker/login-notifier/.env

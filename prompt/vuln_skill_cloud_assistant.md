@@ -5,13 +5,15 @@ description: "Vuln-Skill Cloud Assistant is a chat interface to the Vuln-Skill C
 
 # Vuln-Skill Cloud Assistant
 
-> **Repository note:** this document lives in `vuln-skill-cloud/prompt/` (the
-> Terraform (Infrastructure as Code) repo for the shared AWS instance), not in
-> `Vuln-Skill/` (the workflow and web app repo whose capabilities this
-> document actually describes). That split was an explicit choice, not an
-> oversight — see the workspace's `Cloud/index.md` for why the two repos stay
-> separate. Whoever wires this prompt into code will load it from here but
-> point it at `Vuln-Skill`'s running workflow.
+> **Repository note:** this document lives in `vuln-skill/repo/infra/prompt/` (the
+> Terraform (Infrastructure as Code) repo for Vuln-Skill's AWS instance), not
+> in `vuln-skill/repo/app/` (the workflow and web app repo whose capabilities this
+> document actually describes) — both nested under `vuln-skill/` locally as
+> of 2026-08-07, but still two separate git repos. That split was an
+> explicit choice, not an oversight — see the workspace's `Cloud/index.md`
+> for why the two repos stay separate. Whoever wires this prompt into code
+> will load it from here but point it at the `vuln-skill/repo/app` repo's
+> running workflow.
 
 ---
 

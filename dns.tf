@@ -1,6 +1,7 @@
 resource "aws_route53_zone" "main" {
-  name    = var.domain_name
-  comment = "Managed by Terraform — vuln-skill-cloud"
+  for_each = var.domain_names
+  name     = each.value
+  comment  = "Managed by Terraform — vuln-skill-cloud"
 }
 
 # Retired 2026-08-01 -- was aws_route53_record.threatforge, superseded by
@@ -10,19 +11,32 @@ resource "aws_route53_zone" "main" {
 # decision and its timing are visible in history rather than silently gone.
 
 resource "aws_route53_record" "vuln_skill" {
-  zone_id = aws_route53_zone.main.zone_id
-  name    = "vulnskill.${var.domain_name}"
-  type    = "A"
-  ttl     = 300
-  records = [aws_eip.threatforge.public_ip]
+  for_each = var.domain_names
+  zone_id  = aws_route53_zone.main[each.value].zone_id
+  name     = "vulnskill.${each.value}"
+  type     = "A"
+  ttl      = 300
+  records  = [module.compute.public_ip]
 }
 
-# soc-skill-cloud reuses this same EC2 instance (cost-saving) on its own
-# subdomain — see soc-skill-cloud repo for the app itself.
+# soc-skill-cloud moved 2026-08-07 off this shared instance onto its own
+# independent one (../../../soc-skill/repo/infra) so either app can be destroyed
+# without affecting the other. Its EIP is read via remote state rather
+# than hardcoded, since it's a genuinely separate Terraform project/state
+# now - this only resolves once soc-skill-infra has been applied at least
+# once (its state file has to exist first).
+data "terraform_remote_state" "soc_skill" {
+  backend = "local"
+  config = {
+    path = "../../../soc-skill/repo/infra/terraform.tfstate"
+  }
+}
+
 resource "aws_route53_record" "socskill" {
-  zone_id = aws_route53_zone.main.zone_id
-  name    = "socskill.${var.domain_name}"
-  type    = "A"
-  ttl     = 300
-  records = [aws_eip.threatforge.public_ip]
+  for_each = var.domain_names
+  zone_id  = aws_route53_zone.main[each.value].zone_id
+  name     = "socskill.${each.value}"
+  type     = "A"
+  ttl      = 300
+  records  = [data.terraform_remote_state.soc_skill.outputs.public_ip]
 }
